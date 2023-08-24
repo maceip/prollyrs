@@ -34,6 +34,17 @@ func Mutate(ffiArgs *C.char) *C.char {
 //export Initialize
 func Initialize(ffiArgs *C.char) *C.char {
 
+	fmt.Println("ZZ: init() was called")
+	ctx := context.Background()
+	blockStore := blockstore.NewBlockstore(datastore.NewMapDatastore())
+	nodeStore, err := tree.NewBlockNodeStore(blockStore, &tree.StoreConfig{CacheSize: 1 << 10})
+	chunkConfig := tree.DefaultChunkConfig()
+	framework, err := tree.NewFramework(ctx, nodeStore, chunkConfig, nil)
+	prollydb, prollydbCid, err := framework.BuildTree(ctx)
+	panicIfErr(err)
+	fmt.Println("ZZZ: ", prollydb, " ", prollydbCid)
+
+
 /*
 	cookies, err := ffiDeserialize[[]*http.Cookie](ffiCookies)
 	if err != nil {
@@ -87,6 +98,7 @@ func ffiDeserialize[T any](jsonChars *C.char) (*T, error) {
 }
 
 func main() {
+	fmt.Println("ZZ: main() was called")
 	ctx := context.Background()
 	blockStore := blockstore.NewBlockstore(datastore.NewMapDatastore())
 	nodeStore, err := tree.NewBlockNodeStore(blockStore, &tree.StoreConfig{CacheSize: 1 << 10})
