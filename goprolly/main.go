@@ -14,17 +14,17 @@ import (
 
 
 
-var prollydb *tree.ProllyTree
-var prollydbCid *cid.Cid
+var dbtree *tree.ProllyTree
+var rootcid cid.Cid
 
 //export Mutate
 func Mutate(ffiArgs *C.char) *C.char {
-	if prollydb == nil {
+	if dbtree == nil {
 		return ffiError(fmt.Errorf(
 			"need to init",
 		))
 	}
-	err := prollydb.Mutate()
+	err := dbtree.Mutate()
 	if err != nil {
 		return ffiError(err)
 	}
@@ -34,37 +34,22 @@ func Mutate(ffiArgs *C.char) *C.char {
 //export Initialize
 func Initialize(ffiArgs *C.char) *C.char {
 
-	fmt.Println("ZZ: init() was called")
 	ctx := context.Background()
 	blockStore := blockstore.NewBlockstore(datastore.NewMapDatastore())
 	nodeStore, err := tree.NewBlockNodeStore(blockStore, &tree.StoreConfig{CacheSize: 1 << 10})
 	chunkConfig := tree.DefaultChunkConfig()
 	framework, err := tree.NewFramework(ctx, nodeStore, chunkConfig, nil)
-	prollydb, prollydbCid, err := framework.BuildTree(ctx)
+	dbtree, rootcid, err = framework.BuildTree(ctx)
 	panicIfErr(err)
-	fmt.Println("ZZZ: ", prollydb, " ", prollydbCid)
+	treeConfig := dbtree.TreeConfig()
+	linkPrefix := treeConfig.CidPrefix()
+
+	fmt.Println("go-ipld-prolly-trees init: ", linkPrefix.MhLength, " root: ", rootcid)
 
 
-/*
-	cookies, err := ffiDeserialize[[]*http.Cookie](ffiCookies)
-	if err != nil {
-		return ffiError(err)
-	}
-
-	if scraper != nil {
-		return ffiError(fmt.Errorf("already initialized in (Initialize was called twice)"))
-	}
-
-	scraper = twitterscraper.New()
-
-	scraper.SetCookies(*cookies)
-
-	// This is required for the scraper to know we are logged in
-	if !scraper.IsLoggedIn() {
-		return ffiError(fmt.Errorf("failed to initialize (cookies may be invalid)"))
-	}
-*/
-	return ffiOk(nil)
+	return ffiOk(map[string]interface{}{
+	"root_cid": rootcid.String(),
+	})
 }
 
 func ffiOk(obj interface{}) *C.char {
@@ -96,19 +81,8 @@ func ffiDeserialize[T any](jsonChars *C.char) (*T, error) {
 	}
 	return out, nil
 }
-
 func main() {
-	fmt.Println("ZZ: main() was called")
-	ctx := context.Background()
-	blockStore := blockstore.NewBlockstore(datastore.NewMapDatastore())
-	nodeStore, err := tree.NewBlockNodeStore(blockStore, &tree.StoreConfig{CacheSize: 1 << 10})
-	chunkConfig := tree.DefaultChunkConfig()
-	framework, err := tree.NewFramework(ctx, nodeStore, chunkConfig, nil)
-	prollydb, prollydbCid, err := framework.BuildTree(ctx)
-	panicIfErr(err)
-	fmt.Println("ZZZ: ", prollydb, " ", prollydbCid)
 }
-
 func panicIfErr(err error) {
 	if err != nil {
 		panic(err)
