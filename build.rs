@@ -1,9 +1,5 @@
 fn main() {
-    cgo::Build::new()
-        .trimpath(true)
-        .ldflags("-s -w")
-        .package("goprolly/main.go")
-        .build("goprolly");
+    cgo::Build::new().trimpath(true).ldflags("-s -w").package("goprolly/main.go").build("goprolly");
 
     println!("cargo:rerun-if-changed=goprolly");
     println!("cargo:rerun-if-changed=go.mod");

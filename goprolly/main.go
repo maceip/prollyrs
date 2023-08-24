@@ -2,17 +2,14 @@ package main
 
 import (
 	"C"
-        "context"
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/ipfs/go-cid"
 	datastore "github.com/ipfs/go-datastore"
 	blockstore "github.com/ipfs/go-ipfs-blockstore"
 	tree "github.com/kenlabs/go-ipld-prolly-trees/pkg/tree"
-
 )
-
-
 
 var dbtree *tree.ProllyTree
 var rootcid cid.Cid
@@ -28,7 +25,7 @@ func Mutate(ffiArgs *C.char) *C.char {
 	if err != nil {
 		return ffiError(err)
 	}
-        return ffiOk(nil)
+	return ffiOk(nil)
 }
 
 //export Initialize
@@ -46,9 +43,8 @@ func Initialize(ffiArgs *C.char) *C.char {
 
 	fmt.Println("go-ipld-prolly-trees init: ", linkPrefix.MhLength, " root: ", rootcid)
 
-
 	return ffiOk(map[string]interface{}{
-	"root_cid": rootcid.String(),
+		"root_cid": rootcid.String(),
 	})
 }
 
