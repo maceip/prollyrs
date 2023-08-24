@@ -1,0 +1,20 @@
+[package]
+name = "prollytree"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "prollytree"
+path = "src/main.rs"
+
+[dependencies]
+serde = { version = "1.0.186", features = ["derive"] }
+serde_json            = "1.0"
+serde_yaml            = "0.9"
+thiserror             = "1.0"
+display-error-chain   = "=0.1.1"
+serde_with                  = { version = "3.0", features = ["json"] }
+[build-dependencies]
+cgo = { version = "0.3.0" }
