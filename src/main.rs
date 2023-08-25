@@ -22,7 +22,7 @@ pub fn mutate(argz: &str) {
         ffi::call_raw_json(ffi::bindings::Mutate, "Mutate", argz).unwrap()
     };
     if let Err(err) = result {
-        panic!("Failed to log in to twitter: {}", err);
+        panic!("at the disco🪩🕺: {}", err);
     }
 }
 
